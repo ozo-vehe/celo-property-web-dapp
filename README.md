@@ -4,10 +4,8 @@
 a web dapp where users can buy and sell properties
 ```
 
-# Demo
-```
-https://ozo-vehe.github.io/celo-property-web-dapp/
-```
+# Demo: https://ozo-vehe.github.io/celo-property-web-dapp/
+
 
 # Install
 
