@@ -1,7 +1,9 @@
-# Property
+# Neil and Collen (N&C)
 ```
 
-a web dapp where users can buy and sell properties
+Neil & Collen (N&C) is a property dApp built on CELO blockchain where users can 
+1. View and buy available properties using celo
+2. Sell properties
 ```
 
 # Demo: https://ozo-vehe.github.io/celo-property-web-dapp/
