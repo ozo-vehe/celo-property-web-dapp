@@ -60,6 +60,15 @@ function availableProperties() {
 
 // TEMPLATE FOR DISPLAY PROPERTIES
 function propertyTemplate(property) {
+  const buyBtn = 
+  `<form id="${
+    property.index
+  }">
+  <button type="submit" class="buy">Buy for ${property.price
+    .shiftedBy(-ERC20_DECIMALS)
+    .toFixed(2)} cUSD</button>
+  </form>`;
+
   return `
     <div class="property-img">
       <img src="${property.image}" alt="Property">
@@ -67,18 +76,14 @@ function propertyTemplate(property) {
     </div>
 
     <div class="icon">
-    ${identiconTemplate(property.address)}
+    ${identiconTemplate(property.owner)}
     </div>
 
     <div class="property-description">
       <h2>${property.name}</h2>
       <p>${reduceLength(property.description, 5, "...")}</p>
       <p class="property-location">${property.location}</p>
-      <button id="${
-        property.index
-      }" class="buy">Buy for ${property.price
-    .shiftedBy(-ERC20_DECIMALS)
-    .toFixed(2)} cUSD</button>
+      ${kit.defaultAccount == property.owner ? "" : buyBtn}
     </div>
   `;
 }
@@ -89,7 +94,7 @@ function identiconTemplate(address) {
     .create({
       seed: address,
       size: 8,
-      scale: 16
+      scale: 16,
     })
     .toDataURL();
 
@@ -140,7 +145,7 @@ async function getStoredProperties() {
         description: storedProperty[3],
         image: storedProperty[4],
         price: new BigNumber(storedProperty[5]),
-        sold: storedProperty[6]
+        sold: storedProperty[6],
       });
       reject((err) => {
         notificationOn("Error: " + err);
@@ -157,7 +162,9 @@ async function getStoredProperties() {
 // BUY PROPERTY
 const buyPropertyContainer = document.querySelector(".buy-property");
 
-buyPropertyContainer.addEventListener("click", async function (e) {
+buyPropertyContainer.addEventListener("submit", async function (e) {
+  e.preventDefault();
+  e.stopPropagation();
   const propertyIndex = e.target.id;
 
   notificationOn("Transaction in progress...");
@@ -251,7 +258,7 @@ sellProperty.addEventListener("click", async (e) => {
     propertyLocation.value,
     propertyDesc.value,
     propertyImgUrl.value,
-    new BigNumber(propertyPrice.value).shiftedBy(ERC20_DECIMALS).toString()
+    new BigNumber(propertyPrice.value).shiftedBy(ERC20_DECIMALS).toString(),
   ];
 
   notificationOn(`Adding "${params[0]}"...`);
