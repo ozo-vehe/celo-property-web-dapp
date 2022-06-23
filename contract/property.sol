@@ -15,13 +15,14 @@ interface IERC20Token {
 }
 
 contract BuyBuildings {
-    
+
     string internal defaultImage = "https://images.adsttc.com/media/images/5f56/6397/b357/65bb/f900/0044/slideshow/Palma_Litib%C3%BA-8.jpg?1599497085";
     uint internal propertyLength = 0;
     address internal cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
+    address internal owner ;
 
     mapping(uint => Property) internal properties;
-    
+
     struct Property {
       address payable owner;
       string name;
@@ -30,6 +31,16 @@ contract BuyBuildings {
       string image;
       uint price;
       uint sold;
+      bool flagged;
+    }
+
+    modifier onlyOwner {
+      require(msg.sender == owner);
+      _;
+    }
+
+    constructor(address _owner) public {
+      owner = _owner;
     }
 
     function writeProperty(
@@ -39,6 +50,8 @@ contract BuyBuildings {
       string memory _image,
       uint _price
     ) public {
+
+        require(_price > 0, "Enter a valid price");
       uint _sold = 0;
       properties[propertyLength] = Property(
         payable(msg.sender),
@@ -73,6 +86,7 @@ contract BuyBuildings {
     }
 
     function buyProperty(uint _index) public payable  {
+        require(properties[_index].flagged == false, "Product is flagged");
         require(
           IERC20Token(cUsdTokenAddress).transferFrom(
             msg.sender,
@@ -87,4 +101,18 @@ contract BuyBuildings {
     function getPropertyLength() public view returns (uint) {
       return (propertyLength);
     }
+
+    function flagProperty(uint _index) public onlyOwner {
+      properties[_index].flagged = true;
+    }
+
+    function unFlagProperty(uint _index) public onlyOwner {
+      properties[_index].flagged = false;
+    }
+
+    function getFlaggedProperty(uint _index) public view returns (bool) {
+      return (properties[_index].flagged);
+    }
+
+
 }
